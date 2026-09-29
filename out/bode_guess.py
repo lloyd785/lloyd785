@@ -20,7 +20,7 @@ c=10**(np.mean(db(P[m])+20*np.log10(w[m]))/20)   # |P|=c/w fitted at 8-25 Hz
 Pid=c/(1j*w)*np.exp(-1j*w*1.5/fs)
 bad=(fq>500)
 fig,ax=plt.subplots(3,2,figsize=(12,10),sharex=True)
-for j,(H,name,ideal) in enumerate(((P,'x2/x3(被控对象:转矩→速度,猜测)',Pid),(T21,'x2/x1(闭环,猜测)',None))):
+for j,(H,name,ideal) in enumerate(((P,'速度反馈/转矩指令(被控对象)',Pid),(T21,'速度反馈/激励(闭环)',None))):
     ax[0,j].semilogx(fq,db(H),label='实测');ax[1,j].semilogx(fq,pd(H))
     if ideal is not None:
         ax[0,j].semilogx(fq,db(ideal),'--',label=f'理想 c/(jω)+1.5Ts 延迟, c={c:.3g}');ax[1,j].semilogx(fq,pd(ideal),'--')
@@ -28,6 +28,6 @@ for j,(H,name,ideal) in enumerate(((P,'x2/x3(被控对象:转矩→速度,猜测
     for a in (ax[0,j],ax[1,j]):
         a.axvspan(500,4500,color='gray',alpha=.15);a.grid(True,which='both',alpha=.3)
         for lo,hi in ((fq[sat>0.01].min(),fq[sat>0.01].max()),):a.axvspan(lo,hi,color='r',alpha=.08)
-    ax[2,j].semilogx(fq,sat*100,c='C3');ax[2,j].set_ylabel('x3 限幅 %');ax[2,j].set_xlabel('频率 Hz');ax[2,j].grid(True,which='both',alpha=.3)
-fig.suptitle('灰:x2 分辨率不足(>500Hz 不可信) 红:x3 饱和 50%');plt.tight_layout();plt.savefig('bode_guess.png',dpi=105)
+    ax[2,j].semilogx(fq,sat*100,c='C3');ax[2,j].set_ylabel('转矩指令限幅 %');ax[2,j].set_xlabel('频率 Hz');ax[2,j].grid(True,which='both',alpha=.3)
+fig.suptitle('灰:速度反馈分辨率不足(>500Hz 不可信)  红:转矩指令饱和(50% 限制)');plt.tight_layout();plt.savefig('bode_guess.png',dpi=105)
 print('c',c)
