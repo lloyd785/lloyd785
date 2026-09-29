@@ -69,8 +69,8 @@ def band(ax):
     ax.axvspan(lo, hi, color=RED, alpha=.07, lw=0)
     ax.grid(True, which='both')
 
-fig = plt.figure(figsize=(11, 11.5))
-gs = fig.add_gridspec(4, 1, height_ratios=[1, .8, 1.5, .8], hspace=.5)
+fig = plt.figure(figsize=(11, 14))
+gs = fig.add_gridspec(5, 1, height_ratios=[1, .8, 1.5, 1.2, .8], hspace=.7)
 ax = fig.add_subplot(gs[0])
 clip = np.abs(x3) >= thr
 ax.plot(t, x3, lw=.4, color=BLUE)
@@ -88,7 +88,12 @@ ax.set(ylabel='幅值 [dB]', title='转矩指令/激励 幅频:实测 vs 修正'
 ax.annotate(f'{err.max():.1f} dB', (fq[err.argmax()], db(Hc31)[err.argmax()]), (fq[err.argmax()] * 1.6, db(Hc31)[err.argmax()] - 10),
             arrowprops=dict(arrowstyle='-', color=GRAY), color='#222')
 
-ax = fig.add_subplot(gs[3]); band(ax); ax.semilogx(fq, err, color='#222', lw=1.5)
+ax = fig.add_subplot(gs[3]); band(ax)
+ph = np.degrees(np.unwrap(np.angle(H31))); ph -= 360 * np.round(ph[0] / 360)   # unwrap, start within ±180°
+ax.semilogx(fq, ph, color=BLUE, lw=1.6, label='实测(未做限幅修正)')
+ax.set(ylabel='相位 [°]', title='转矩指令/激励 相频(色块为限幅频段,相位未修正)'); ax.legend(loc='upper right')
+
+ax = fig.add_subplot(gs[4]); band(ax); ax.semilogx(fq, err, color='#222', lw=1.5)
 ax.set(xlabel='频率 [Hz]', ylabel='dB', title='限幅造成的幅值误差(估算)')
 fig.savefig('sat_bode_compare.png', dpi=110, bbox_inches='tight')
 
